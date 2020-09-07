@@ -33,7 +33,7 @@ node *SnakeOrSnail(LinkedList *list){
     node *slow_p = list->get_head(), *fast_p = list->get_head(); 
         while (slow_p != NULL && fast_p != NULL && fast_p->next != NULL) { 
             slow_p = slow_p->next; 
-            fast_p = fast_p->next; 
+            fast_p = fast_p->next->next; 
             if (slow_p == fast_p) { 
                 return slow_p;
             } 
