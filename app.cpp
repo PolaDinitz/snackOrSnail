@@ -1,32 +1,39 @@
 #include "linkedlist.cpp"
 #include <iostream>
 #include <random>
+#include <chrono>
 
 using namespace std;
 
-LinkedList *createSnakeOrSnail(LinkedList *list){
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_real_distribution<> dis(0, 1);//uniform distribution between 0 and 1
+void createSnakeOrSnail(LinkedList *list){
+    std::mt19937_64 rng;
+    // initialize the random number generator with time-dependent seed
+    uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    std::seed_seq ss{uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed>>32)};
+    rng.seed(ss);
+    // initialize a uniform distribution between 0 and 1
+    std::uniform_real_distribution<double> unif(0, 1);
+    // ready to generate random numbers
 
     // snake
-    if(dis(rd) >= 0.5){
-        while(dis(rd) > 0.1) {
-            list->add_node((int)dis(rd)*1000);
+    if(unif(rng) >= 0.5){
+        cout << "got snake" << endl;
+        while(unif(rng) > 0.1) {
+            list->add_node((int)(unif(rng)*1000));
         } 
     } else {
         node *loop_node = new node();
-        while(dis(rd) > 0.02) {
-            list->add_node((int)dis(rd)*1000);
+        while(unif(rng) > 0.02) {
+            list->add_node((int)(unif(rng)*1000));
             // check if the last inserted node is the loop node and save it
-            if(dis(rd) <= 0.015){
+            if(unif(rng) <= 0.015){
+                cout << "got new loop " <<endl;
                 loop_node = list->get_tail();
             }
         }
         // change the next of the last inserted node to the loop node
         list->get_tail()->next = loop_node;
     }
-    return list;
 }
 
 node *SnakeOrSnail(LinkedList *list){
@@ -45,37 +52,44 @@ node *SnakeOrSnail(LinkedList *list){
 void printSnakeOrSnail(LinkedList *list){
     node *loop_node = SnakeOrSnail(list); 
     // it is a snake
+    cout << loop_node << endl;
     if(loop_node == NULL){
+        cout<<"snake"<<endl;
         node *temp=new node;
         temp=list->get_head();
         while(temp!=NULL)
         {
-            cout<<temp->data<<'\u2192';
+            cout<<temp->data<<"->";
             temp=temp->next;
         }
-        cout<<'\u2192'<<"NULL\n";
+        cout<<"->"<<"NULL\n";
     } else {
+        cout<<"snail"<<endl;
         node *temp=new node;
         temp=list->get_head();
         while(temp->next!=loop_node)
         {   
-            cout<<temp->data<<'\u2192';
+            cout << temp->next << " " << loop_node <<endl;
+            cout<<temp->data<<"->";
             temp=temp->next;
         }
         // the next node is the beginning of the loop
         temp=temp->next;
-        cout<<'\u21b1';
+        cout<<"^>";
         // when the next time the next node is the loop node we've reached the end
         while(temp->next!=loop_node)
         {   
-            cout<<temp->data<<'\u2192';
+            cout<<temp->data<<"->";
             temp=temp->next;
         }
-        cout<<'\u21b2';
+        cout<<"v<";
     }
 }
 
-int main(){ 
-    LinkedList a;
+int main(){
+    LinkedList list;
+    createSnakeOrSnail(&list);
+    printSnakeOrSnail(&list);
     return 0;
 }
+ 

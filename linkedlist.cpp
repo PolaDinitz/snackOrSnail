@@ -15,7 +15,7 @@ class LinkedList{
             head = NULL;
             tail = NULL;
         }
-        
+
         node* get_head() { return head;};
         node* get_tail() { return tail;};
 
