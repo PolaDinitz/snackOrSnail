@@ -72,6 +72,7 @@ void printSnakeOrSnail(LinkedList *list){
     loop_node = SnakeOrSnail(list); 
     // it is a snake
     cout << loop_node << endl;
+    int counter = 0;
     if(loop_node == NULL){
         node *temp=new node();
         temp = list->get_head();
@@ -79,12 +80,17 @@ void printSnakeOrSnail(LinkedList *list){
         {
             wcout<<temp->data<<L"\x2192";
             temp=temp->next;
+            counter++;
         }
         wcout<<"null" << endl;
+        wcout << "number of nodes in the snake are: " << counter << endl;
     } else {
+        int counter = 3;
+        int counterLoop = 2;
         node *temp=new node;
         temp=list->get_head();
-        while(temp->next->next!=loop_node){   
+        while(temp->next->next!=loop_node){
+            counter++;   
             wcout<<temp->data<<L"\x2192";
             temp=temp->next;
         }
@@ -98,11 +104,14 @@ void printSnakeOrSnail(LinkedList *list){
         // when the next time the next node is the loop node we've reached the end
         while(temp->next!=loop_node)
         {   
+            counter++;
+            counterLoop++;
             wcout<<temp->data<<L"\x2192";
             temp=temp->next;
         }
         wcout<<temp->data;
-        wcout<<L"\x21B2";
+        wcout<<L"\x21B2"<<endl;
+        wcout<<"Number of nodes in the snail: "<<counter<<" Number of nodes in the loop: "<<counterLoop<<endl;
     }
 };
 
