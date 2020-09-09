@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fcntl.h>
+#include <io.h>
 
 using namespace std;
 
@@ -16,7 +18,8 @@ class LinkedList{
             tail = NULL;
         }
 
-        node* get_head() { return head;};
+        node* get_head() { 
+            return head;};
         node* get_tail() { return tail;};
 
         void add_node(int a){
@@ -35,11 +38,12 @@ class LinkedList{
         }
 
         void display(){
+           _setmode(_fileno(stdout), 0x00020000);
             node *temp=new node;
             temp=head;
             while(temp!=NULL)
             {
-                cout<<temp->data<<"\t";
+                wcout<<temp->data<<"\t";
                 temp=temp->next;
             }
         } 

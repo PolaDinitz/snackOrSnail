@@ -2,8 +2,11 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <fcntl.h>
+#include <io.h>
 
 using namespace std;
+
 
 void createSnakeOrSnail(LinkedList *list){
     std::mt19937_64 rng;
@@ -16,86 +19,92 @@ void createSnakeOrSnail(LinkedList *list){
     // ready to generate random numbers
 
     // snake
-    if(unif(rng) >= 0.5){
-        cout << "got snake" << endl;
-        while(unif(rng) > 0.1) {
-            list->add_node((int)(unif(rng)*1000));
-        } 
+    if(unif(rng) > 0.5){
+        while(unif(rng) > 0.01) {
+            list->add_node((int)(unif(rng)*100));
+        }
     } else {
         node *loop_node = new node();
         while(unif(rng) > 0.02) {
-            list->add_node((int)(unif(rng)*1000));
+            int new_node = (int)(unif(rng)*100);
+            list->add_node(new_node);
             // check if the last inserted node is the loop node and save it
             if(unif(rng) <= 0.015){
-                cout << "got new loop " <<endl;
                 loop_node = list->get_tail();
             }
         }
         // change the next of the last inserted node to the loop node
         list->get_tail()->next = loop_node;
     }
-}
+};
 
 node *SnakeOrSnail(LinkedList *list){
-    node* tmp = new node;
-    node* head = list->get_head();
+    if (list->get_head() == NULL || list->get_head()->next == NULL)
+        return NULL;
 
-    while (head != NULL) {
+    node* slow = list->get_head(); 
+    node* fast = list->get_head();
+    slow = slow->next;
+    fast = fast->next->next;
 
-        if (head->next == NULL) {
-            return NULL;
-        }
-
-        if (head->next == tmp) {
+    while (fast && fast->next){
+        if(slow == fast)
             break;
-        }
-
-        node* ret = head->next;
-        head->next = tmp;
-        head = ret;
+        slow = slow->next;
+        fast = fast->next->next;
     }
-
-    return head;
-}
-}
+    wcout<<endl;
+    if(slow != fast)
+        return NULL;
     
+    slow = list->get_head();
+    while(slow != fast){
+        slow = slow->next;
+        fast = fast->next;
+    } 
+    return slow;
+};
+ 
 // left arrow unicode u2192, uparrow with tip to the right 21b1, down arrow with tip to the left 21b2
 void printSnakeOrSnail(LinkedList *list){
-    node *loop_node = SnakeOrSnail(list); 
+    _setmode(_fileno(stdout), 0x00020000);
+    node *loop_node = new node();
+    loop_node = SnakeOrSnail(list); 
     // it is a snake
     cout << loop_node << endl;
     if(loop_node == NULL){
-        cout<<"snake"<<endl;
-        node *temp=new node;
-        temp=list->get_head();
+        node *temp=new node();
+        temp = list->get_head();
         while(temp!=NULL)
         {
-            cout<<temp->data<<"->";
+            wcout<<temp->data<<L"\x2192";
             temp=temp->next;
         }
-        cout<<"->"<<"NULL\n";
+        wcout<<"null" << endl;
     } else {
-        cout<<"snail"<<endl;
         node *temp=new node;
         temp=list->get_head();
-        while(temp->next!=loop_node)
-        {   
-            cout << temp->next << " " << loop_node <<endl;
-            cout<<temp->data<<"->";
+        while(temp->next->next!=loop_node){   
+            wcout<<temp->data<<L"\x2192";
             temp=temp->next;
         }
+        wcout<<temp->data;
+        temp=temp->next;
         // the next node is the beginning of the loop
         temp=temp->next;
-        cout<<"^>";
+        wcout<<L"\x21B1" << temp->data << L"\x2192";
+        temp=temp->next;
+
         // when the next time the next node is the loop node we've reached the end
         while(temp->next!=loop_node)
         {   
-            cout<<temp->data<<"->";
+            wcout<<temp->data<<L"\x2192";
             temp=temp->next;
         }
-        cout<<"v<";
+        wcout<<temp->data;
+        wcout<<L"\x21B2";
     }
-}
+};
 
 int main(){
     LinkedList list;
