@@ -37,15 +37,26 @@ void createSnakeOrSnail(LinkedList *list){
 }
 
 node *SnakeOrSnail(LinkedList *list){
-    node *slow_p = list->get_head(), *fast_p = list->get_head(); 
-        while (slow_p != NULL && fast_p != NULL && fast_p->next != NULL) { 
-            slow_p = slow_p->next; 
-            fast_p = fast_p->next->next; 
-            if (slow_p == fast_p) { 
-                return slow_p;
-            } 
-        } 
-        return NULL;
+    node* tmp = new node;
+    node* head = list->get_head();
+
+    while (head != NULL) {
+
+        if (head->next == NULL) {
+            return NULL;
+        }
+
+        if (head->next == tmp) {
+            break;
+        }
+
+        node* ret = head->next;
+        head->next = tmp;
+        head = ret;
+    }
+
+    return head;
+}
 }
     
 // left arrow unicode u2192, uparrow with tip to the right 21b1, down arrow with tip to the left 21b2
